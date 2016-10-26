@@ -25,11 +25,9 @@ RUN apt-get update \
  && apt-get install ${OPTS_APT} \
             wget bzip2 xz-utils git libtool \
             patch less autoconf automake make \
-            sudo time ohcount \
             llvm libgmp-dev g++ python ncurses-dev \
             ghc-8.0.1 cabal-install-1.24 stack \
-            time ohcount # these are only needed for GHC benchmarks \
-            unzip libssl-dev libfile-slurp-perl libipc-run-perl libicu-dev \ # gipeda and GHC benchmarks
+            time ohcount libfile-slurp-perl libipc-run-perl \
             vim-tiny \
  && apt-get clean
 
@@ -45,9 +43,10 @@ RUN useradd -m -d /home/bench -s /bin/bash bench
 # RUN echo "ghc ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ghc && chmod 0440 /etc/sudoers.d/ghc
 USER bench
 ENV HOME /home/bench
-WORKDIR /home/bench
+WORKDIR ${HOME}
 
-ADD benchmark.sh ${HOME}/benchmark.sh # GHC benchmark script until it's in master
+# GHC benchmark script until it's in master
+ADD benchmark.sh ${HOME}/benchmark.sh
 ADD log2csv ${HOME}/log2csv
 RUN chmod 755 ${HOME}/benchmark.sh ${HOME}/log2csv
 
