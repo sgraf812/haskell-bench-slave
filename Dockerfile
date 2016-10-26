@@ -29,11 +29,9 @@ RUN apt-get update \
             llvm libgmp-dev g++ python ncurses-dev \
             ghc-8.0.1 cabal-install-1.24 stack \
             time ohcount # these are only needed for GHC benchmarks \
+            unzip libssl-dev libfile-slurp-perl libipc-run-perl libicu-dev \ # gipeda and GHC benchmarks
             vim-tiny \
  && apt-get clean
- 
-            # unzip libssl-dev libfile-slurp-perl libipc-run-perl libicu-dev \ # gipeda
-            # rsync \ # feed-gipeda
 
 # Locale stuff which does all kinds of things
 RUN locale-gen en_US.UTF-8
