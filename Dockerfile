@@ -28,7 +28,8 @@ RUN apt-get update \
             sudo time ohcount \
             llvm libgmp-dev g++ python ncurses-dev \
             ghc-8.0.1 cabal-install-1.24 stack \
-            time ohcount # these are only needed for GHC benchmarks \ 
+            time ohcount # these are only needed for GHC benchmarks \
+            vim-tiny \
  && apt-get clean
  
             # unzip libssl-dev libfile-slurp-perl libipc-run-perl libicu-dev \ # gipeda
@@ -48,9 +49,19 @@ USER bench
 ENV HOME /home/bench
 WORKDIR /home/bench
 
-ENV PATH ${HOME}/.local/bin:${HOME}/.cabal/bin:/opt/ghc/bin:/opt/cabal/bin:${PATH}
-RUN stack setup
-RUN stack install alex happy nofib-analyse cloben --install-ghc
+ADD benchmark.sh ${HOME}/benchmark.sh # GHC benchmark script until it's in master
+ADD log2csv ${HOME}/log2csv
+RUN chmod 755 ${HOME}/benchmark.sh ${HOME}/log2csv
+
+# PATH for stack builds, cabal builds, apt-get ghc and apt-get cabal
+ENV PATH ${HOME}/.local/bin:${HOME}/.cabal/bin:/opt/ghc/8.0.1/bin:/opt/cabal/1.24/bin:${PATH}
+
+RUN cabal update \
+ && cabal install -j alex happy \
+ && cabal install -j html regex-compat # for GHC benchmarks
+
+RUN stack setup # leaving setup separate for now, because it currently takes really long
+RUN stack install cloben --install-ghc
 
 # feed-gipeda isn't yet on stackage, we'll have to compile from source for the time being
 RUN git clone https://github.com/sgraf812/feed-gipeda
